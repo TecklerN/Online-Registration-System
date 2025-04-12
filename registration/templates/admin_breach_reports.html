@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-danger mb-4">🛡️ Reported Data Breaches</h2>
+
+    {% if reports %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Organization</th>
+                    <th>Description</th>
+                    <th>Date Occurred</th>
+                    <th>Reported On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ report.organization }}</strong></td>
+                    <td>{{ report.description }}</td>
+                    <td>{{ report.date_occurred }}</td>
+                    <td>{{ report.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        🚫 No data breaches have been reported yet.
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

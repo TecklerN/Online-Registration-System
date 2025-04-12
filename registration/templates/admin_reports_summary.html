@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary mb-4">📊 POTRAZ Reports Summary</h2>
+
+    <div class="row g-4">
+        <!-- Registration Stats -->
+        <div class="col-md-6">
+            <div class="card border-info shadow rounded-4">
+                <div class="card-header bg-info text-white rounded-top-4">
+                    <h5 class="mb-0">📝 Registration Overview</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">🔹 Total Registrations: <strong>{{ total_registrations }}</strong></li>
+                        <li class="list-group-item text-success">✅ Approved: <strong>{{ approved }}</strong></li>
+                        <li class="list-group-item text-warning">⏳ Pending: <strong>{{ pending }}</strong></li>
+                        <li class="list-group-item text-danger">❌ Rejected: <strong>{{ rejected }}</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breach Report Stats -->
+        <div class="col-md-6">
+            <div class="card border-danger shadow rounded-4">
+                <div class="card-header bg-danger text-white rounded-top-4">
+                    <h5 class="mb-0">🚨 Breach Reports Summary</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">📋 Total Reports: <strong>{{ total_breaches }}</strong></li>
+                        <li class="list-group-item text-success">🟢 Resolved: <strong>{{ resolved }}</strong></li>
+                        <li class="list-group-item text-warning">🟡 Reviewed: <strong>{{ reviewed }}</strong></li>
+                        <li class="list-group-item text-secondary">⚪ Pending: <strong>{{ breach_pending }}</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-5 text-muted">
+        <small>&copy; 2025 POTRAZ Online Registration System</small>
+    </footer>
+</div>
+{% endblock %}

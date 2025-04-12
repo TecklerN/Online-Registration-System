@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-xl font-bold mb-4">📄 My Reported Breaches</h2>
+
+{% if breaches %}
+<table class="table-auto w-full border">
+    <thead>
+        <tr class="bg-gray-200">
+            <th class="px-4 py-2">Date Reported</th>
+            <th class="px-4 py-2">Description</th>
+            <th class="px-4 py-2">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for breach in breaches %}
+        <tr class="border-t">
+            <td class="px-4 py-2">{{ breach.date_reported }}</td>
+            <td class="px-4 py-2">{{ breach.description }}</td>
+            <td class="px-4 py-2">{{ breach.status }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No breaches reported yet.</p>
+{% endif %}
+
+{% endblock %}

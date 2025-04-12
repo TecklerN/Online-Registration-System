@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Online Registration{% endblock %}
+
+{% block content %}
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="text-center text-primary">Register as a Data Controller or Processor</h2>
+        
+        <!-- Registration Form -->
+        <form method="POST" enctype="multipart/form-data" class="mt-4">  <!-- Add enctype -->
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Render the form dynamically -->
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+
+        <!-- Pay Now Button -->
+        <div class="mt-4 text-center">
+            {% if registration %}
+                <form action="{% url 'make_payment' registration.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Pay Now</button>
+                </form>
+            {% else %}
+                <p class="text-danger">No registration data available for payment.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+{% endblock %}

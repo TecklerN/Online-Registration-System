@@ -1,0 +1,750 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POTRAZ | Postal and Telecommunications Regulatory Authority of Zimbabwe</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  <style>
+    :root {
+      --potraz-blue: #0056b3;
+      --potraz-light-blue: #e6f0fa;
+      --potraz-dark: #003366;
+      --potraz-accent: #ff9900;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    
+    /* Topbar */
+    .topbar {
+      background-color: var(--potraz-dark);
+      padding: 10px 0;
+      font-size: 0.9rem;
+    }
+    
+    .topbar a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    /* Main Navigation */
+    .navbar-main {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .navbar-brand img {
+      height: 60px;
+    }
+    
+    .nav-link {
+      color: var(--potraz-dark);
+      font-weight: 500;
+      padding: 10px 15px;
+    }
+    
+    .nav-link:hover, .nav-link:focus {
+      color: var(--potraz-blue);
+    }
+    
+    .dropdown-menu {
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .dropdown-item {
+      padding: 8px 15px;
+    }
+    
+    .dropdown-item:hover {
+      background-color: var(--potraz-light-blue);
+      color: var(--potraz-blue);
+    }
+    /* Data Roles Section */
+.data-roles-section {
+  background-color: #f8fafc;
+}
+
+.role-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.icon-container {
+  transition: all 0.3s ease;
+}
+
+.role-card:hover .icon-container {
+  background-color: rgba(0, 123, 255, 0.2) !important;
+  transform: scale(1.05);
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+}
+    
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "images/hero-bg.jpg" %}');
+      background-size: cover;
+      background-position: center;
+      height: 500px;
+      display: flex;
+      align-items: center;
+      color: white;
+      position: relative;
+    }
+    
+    .hero-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+    }
+    
+    .btn-hero {
+      background-color: var(--potraz-accent);
+      color: white;
+      padding: 10px 25px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    
+    .btn-hero:hover {
+      background-color: #e68a00;
+      color: white;
+    }
+    
+    /* Icons Section */
+    .icon-section {
+      padding: 60px 0;
+      background-color: white;
+    }
+    
+    .icon-box {
+      text-align: center;
+      padding: 30px 20px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      height: 100%;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .icon-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .icon-box img {
+      height: 80px;
+      margin-bottom: 20px;
+    }
+    
+    .icon-box h2 {
+      font-size: 1.5rem;
+      color: var(--potraz-dark);
+      margin-bottom: 15px;
+    }
+    
+    /* Quick Access Section */
+    .quick-access {
+      background-color: var(--potraz-light-blue);
+      padding: 60px 0;
+    }
+    
+    .access-card {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      height: 100%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    
+    .access-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .access-icon {
+      font-size: 2.5rem;
+      color: var(--potraz-blue);
+      margin-bottom: 20px;
+    }
+    
+    /* News Section */
+    .news-section {
+      padding: 60px 0;
+    }
+    
+    .news-card {
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      transition: transform 0.3s;
+      height: 100%;
+    }
+    
+    .news-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .news-img {
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .news-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    
+    .news-card:hover .news-img img {
+      transform: scale(1.05);
+    }
+    
+    .news-date {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .news-title {
+      color: var(--potraz-dark);
+      font-weight: 600;
+    }
+    
+    /* Footer */
+    .main-footer {
+      background-color: var(--potraz-dark);
+      color: white;
+      padding: 60px 0 20px;
+    }
+    
+    .footer-title {
+      color: var(--potraz-accent);
+      font-weight: 600;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+    
+    .footer-links a {
+      color: #ddd;
+      display: block;
+      margin-bottom: 10px;
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .social-links a {
+      color: white;
+      font-size: 1.5rem;
+      margin-right: 15px;
+    }
+    
+    .social-links a:hover {
+      color: var(--potraz-accent);
+    }
+    
+    .copyright {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 20px;
+      margin-top: 40px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    
+    /* Carousel */
+    .carousel-img {
+      height: 500px;
+      object-fit: cover;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+      
+      .topbar .d-flex {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .topbar img {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div class="d-flex align-items-center">
+          <img src="{% static 'images/potraz_logo.png' %}" alt="POTRAZ Logo" height="40" class="me-3">
+          <div class="text-white">
+            <i class="fas fa-phone-alt me-2"></i> +263 242 333 032 | 
+            <i class="fas fa-envelope ms-3 me-2"></i> info@potraz.gov.zw
+          </div>
+        </div>
+        <div class="d-flex align-items-center mt-2 mt-md-0">
+          <a href="#" class="text-white me-3"><i class="fas fa-sitemap me-1"></i> Sitemap</a>
+          <a href="https://www.potraz.gov.zw/?page_id=519" class="text-white me-3"><i class="fas fa-question-circle me-1"></i> FAQs</a>
+          <select class="form-select form-select-sm d-inline-block w-auto bg-transparent text-white border-light">
+            <option>English</option>
+            <option>Shona</option>
+            <option>Ndebele</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-main sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="{% static 'images/potraz_logo.png.png' %}" alt="POTRAZ Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="https://www.potraz.gov.zw/?page_id=365" data-bs-toggle="dropdown">About Us</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/index.php/about-us">Who We Are</a></li>
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/index.php/our-mandate">Our Mandate</a></li>
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/?page_id=462">Organizational Structure</a></li>
+              <li><a class="dropdown-item" href="#">Board of Directors</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Policies</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/index.php/legal-framework">Cybersecurity Act</a></li>
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/wp-content/uploads/2024/12/POTRAZ-Code-of-Ethics-2020-signed.pdf">Code of Ethics</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="https://www.potraz.gov.zw/?page_id=1678" data-bs-toggle="dropdown">Regulations</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/?page_id=1847">Licensing</a></li>
+              <li><a class="dropdown-item" href="#">Tariffs</a></li>
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/?page_id=367">Quality of Service</a></li>
+              <li><a class="dropdown-item" href="https://www.potraz.gov.zw/?page_id=1678">Consumer Protection</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.potraz.gov.zw/wp-content/uploads/2025/02/CALL-FOR-PHD-GRANTS-FINAL.pdf">Research</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.potraz.gov.zw/?page_id=2240">News & Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.potraz.gov.zw/?page_id=577">Contact Us</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Carousel -->
+  <section class="hero-section">
+    <div id="teamCarousel" class="carousel slide h-100" data-bs-ride="carousel">
+      <div class="carousel-inner h-100">
+        {% for i in "13456" %}
+        <div class="carousel-item h-100 {% if forloop.first %}active{% endif %}">
+          <img src="{% static 'images/team'|add:i|add:'.jpg' %}" class="d-block w-100 carousel-img" alt="Team Member {{ i }}">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="container h-100">
+      <div class="row h-100 align-items-center">
+        <div class="col-lg-8">
+          <h1 class="hero-title">Regulating Zimbabwe's Postal and Telecommunications Sector</h1>
+          <p class="hero-subtitle">Promoting innovation, accessibility and consumer protection in the digital era</p>
+          <a href="#" class="btn btn-hero">Learn More About Our Work</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Roles Section -->
+  <!-- Beautiful Data Roles Section -->
+<section class="data-roles-section py-5" style="background: linear-gradient(to bottom, #f8fafc, #e6f2ff);">
+  <div class="container">
+    <!-- Section Header with POTRAZ Icon -->
+    <div class="text-center mb-5">
+      <div class="icon-header mb-3">
+        <img src="{% static 'images/potraz-icon.png' %}" alt="POTRAZ Icon" width="60" class="mb-3">
+      </div>
+      <h2 class="display-5 fw-bold text-dark mb-2">Understanding Your <span class="text-primary">Data Protection Role</span></h2>
+      <div class="divider mx-auto bg-primary" style="width: 80px; height: 3px;"></div>
+    </div>
+
+    <!-- Animated Role Cards -->
+    <div class="row g-4 justify-content-center">
+      <!-- Data Controller Card -->
+      <div class="col-lg-5">
+        <div class="role-card h-100 p-4 bg-white rounded-3 shadow-sm position-relative overflow-hidden">
+          <div class="position-absolute top-0 end-0 bg-primary bg-opacity-10 px-3 py-1 rounded-bl">
+            <small class="text-primary fw-bold">PRIMARY RESPONSIBILITY</small>
+          </div>
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-container bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+              <i class="fas fa-chess-queen fa-2x text-primary"></i>
+            </div>
+            <h3 class="h4 mb-0">Data Controller</h3>
+          </div>
+          
+          <div class="mb-4">
+            <p class="lead text-muted">The <strong class="text-primary">decision-maker</strong> who determines the purpose and means of processing personal data.</p>
+            <div class="ps-4">
+              <ul class="list-unstyled">
+                <li class="mb-2 d-flex"><i class="fas fa-check-circle text-primary mt-1 me-2"></i> <span>Determines <strong>what</strong> data is collected</span></li>
+                <li class="mb-2 d-flex"><i class="fas fa-check-circle text-primary mt-1 me-2"></i> <span>Defines <strong>how</strong> it will be processed</span></li>
+                <li class="mb-2 d-flex"><i class="fas fa-check-circle text-primary mt-1 me-2"></i> <span>Establishes <strong>why</strong> it's needed</span></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="responsibilities p-3 bg-light rounded mb-4">
+            <h4 class="h5 text-primary mb-3"><i class="fas fa-tasks me-2"></i> Key Responsibilities</h4>
+            <ul class="fa-ul">
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-primary"></i></span> Register with POTRAZ</li>
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-primary"></i></span> Conduct Data Protection Impact Assessments</li>
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-primary"></i></span> Implement appropriate security measures</li>
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-primary"></i></span> Respond to data subject requests</li>
+            </ul>
+          </div>
+          
+          <div class="example-box p-3 rounded" style="background-color: #f0f7ff;">
+            <h5 class="h6 text-primary mb-2"><i class="fas fa-lightbulb me-2"></i> Real-World Example</h5>
+            <p class="mb-0">A <strong>bank</strong> collecting customer information for account opening is the Controller of that data.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider for Visual Separation -->
+      <div class="col-lg-1 d-flex align-items-center justify-content-center position-relative">
+        <div class="vr d-none d-lg-flex" style="height: 80%;"></div>
+        <div class="position-absolute bg-white border border-2 p-2 rounded-circle">
+          <span class="text-muted fw-bold">vs</span>
+        </div>
+      </div>
+
+      <!-- Data Processor Card -->
+      <div class="col-lg-5">
+        <div class="role-card h-100 p-4 bg-white rounded-3 shadow-sm position-relative overflow-hidden">
+          <div class="position-absolute top-0 end-0 bg-info bg-opacity-10 px-3 py-1 rounded-bl">
+            <small class="text-info fw-bold">SECONDARY ROLE</small>
+          </div>
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-container bg-info bg-opacity-10 p-3 rounded-circle me-3">
+              <i class="fas fa-cogs fa-2x text-info"></i>
+            </div>
+            <h3 class="h4 mb-0">Data Processor</h3>
+          </div>
+          
+          <div class="mb-4">
+            <p class="lead text-muted">The <strong class="text-info">service provider</strong> that processes data on behalf of the Controller.</p>
+            <div class="ps-4">
+              <ul class="list-unstyled">
+                <li class="mb-2 d-flex"><i class="fas fa-check-circle text-info mt-1 me-2"></i> <span>Follows Controller's <strong>instructions</strong></span></li>
+                <li class="mb-2 d-flex"><i class="fas fa-check-circle text-info mt-1 me-2"></i> <span>Has <strong>no purpose</strong> of its own</span></li>
+                <li class="mb-2 d-flex"><i class="fas fa-check-circle text-info mt-1 me-2"></i> <span>Bound by <strong>contract</strong></span></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="responsibilities p-3 bg-light rounded mb-4">
+            <h4 class="h5 text-info mb-3"><i class="fas fa-tasks me-2"></i> Key Responsibilities</h4>
+            <ul class="fa-ul">
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-info"></i></span> Only process as instructed</li>
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-info"></i></span> Maintain processing records</li>
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-info"></i></span> Implement security measures</li>
+              <li class="mb-2"><span class="fa-li"><i class="fas fa-arrow-right text-info"></i></span> Report breaches within 72 hours</li>
+            </ul>
+          </div>
+          
+          <div class="example-box p-3 rounded" style="background-color: #f0f9ff;">
+            <h5 class="h6 text-info mb-2"><i class="fas fa-lightbulb me-2"></i> Real-World Example</h5>
+            <p class="mb-0">A <strong>cloud storage provider</strong> hosting customer data for a bank is the Processor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+      <!-- Key Differences Table -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h3 class="h5 mb-0">Comparative Summary</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th width="30%">Aspect</th>
+                      <th width="35%">Data Controller</th>
+                      <th width="35%">Data Processor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Decision Making</strong></td>
+                      <td>Determines purposes and means of processing</td>
+                      <td>Follows controller's instructions</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Legal Liability</strong></td>
+                      <td>Primary liability for compliance</td>
+                      <td>Liable only for processor-specific obligations</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Relationship</strong></td>
+                      <td>Engages processors via contracts</td>
+                      <td>Cannot engage sub-processors without authorization</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Registration</strong></td>
+                      <td>Must register with POTRAZ</td>
+                      <td>Registration may be required depending on activities</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+         <!-- CTA Section -->
+    <div class="row mt-5">
+      <div class="col-12 text-center">
+        <div class="cta-box p-4 rounded-3" style="background: linear-gradient(to right, #0056b3, #0083d1);">
+          <h3 class="h4 text-white mb-3">Still Unsure About Your Role?</h3>
+          <p class="text-white-50 mb-4">Take our 2-minute assessment to determine if you're a Controller or Processor</p>
+          <a href="#" class="btn btn-light btn-lg px-4">
+            <i class="fas fa-clipboard-check me-2"></i> Take Assessment
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  
+  
+  <!-- Icons Section -->
+  <section class="icon-section">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="icon-box">
+            <img src="{% static 'images/registration.png.png' %}" alt="Register">
+            <h4>Registration</h4>
+            <a href="/register" class="btn btn-outline-primary mt-2">Register</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="icon-box">
+            <img src="{% static 'images/login.png.png' %}" alt="Login">
+            <h4>Login</h4>
+            <a href="/login" class="btn btn-outline-primary mt-2">Login</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="icon-box">
+            <img src="{% static 'images/complaints.png' %}" alt="Complaint">
+            <h4>Complaints</h4>
+            <a href="/report-breach" class="btn btn-outline-primary mt-2">Report Breach</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Access Section -->
+  <section class="quick-access">
+    <div class="container">
+      <h5 class="text-center mb-5">Quick Access</h5>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="access-card text-center">
+            <div class="access-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h5>Licensing</h5>
+            <p>Apply for telecommunications and postal service licenses</p>
+            <a href="#" class="btn btn-outline-primary">Apply Now</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="access-card text-center">
+            <div class="access-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h5>Statistics</h5>
+            <p>Access the latest sector statistics and reports</p>
+            <a href="#" class="btn btn-outline-primary">View Reports</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="access-card text-center">
+            <div class="access-icon">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h5>Complaints</h5>
+            <p>Lodge a complaint about service providers</p>
+            <a href="#" class="btn btn-outline-primary">Submit Complaint</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News Section -->
+  <section class="news-section">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-5">
+        <h6>Latest News & Updates</h6>
+        <a href="#" class="btn btn-primary">View All News</a>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="news-card">
+            <div class="news-img">
+              <img src="{% static 'images/news1.jpg' %}" alt="News Image">
+            </div>
+            <div class="card-body">
+              <p class="news-date">June 15, 2024</p>
+              <h6 class="news-title">POTRAZ Releases Quarterly Sector Performance Report</h6>
+              <p>The report shows significant growth in mobile money transactions and internet penetration...</p>
+              <a href="#" class="btn btn-link ps-0">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="news-card">
+            <div class="news-img">
+              <img src="{% static 'images/news2.jpg' %}" alt="News Image">
+            </div>
+            <div class="card-body">
+              <p class="news-date">June 10, 2024</p>
+              <h6 class="news-title">Public Hearing on New Tariff Regulations</h6>
+              <p>Stakeholders are invited to provide input on proposed changes to telecommunications tariffs...</p>
+              <a href="#" class="btn btn-link ps-0">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="news-card">
+            <div class="news-img">
+              <img src="{% static 'images/news3.jpg' %}" alt="News Image">
+            </div>
+            <div class="card-body">
+              <p class="news-date">June 5, 2024</p>
+              <h6 class="news-title">Awareness Campaign on Cybersecurity</h6>
+              <p>POTRAZ launches nationwide initiative to educate the public on online safety and data protection...</p>
+              <a href="#" class="btn btn-link ps-0">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <h7 class="footer-title">About POTRAZ</h7>
+          <p>The Postal and Telecommunications Regulatory Authority of Zimbabwe (POTRAZ) is the regulatory authority for the postal and telecommunications sector in Zimbabwe.</p>
+          <div class="social-links mt-3">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h7 class="footer-title">Quick Links</h7>
+          <div class="footer-links">
+            <a href="#">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Regulations</a>
+            <a href="#">Statistics</a>
+            <a href="#">Research</a>
+            <a href="#">News & Events</a>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h7 class="footer-title">Services</h7>
+          <div class="footer-links">
+            <a href="#">Licensing</a>
+            <a href="#">Tariffs</a>
+            <a href="#">Consumer Complaints</a>
+            <a href="#">Quality of Service</a>
+            <a href="#">Number Portability</a>
+            <a href="#">Type Approval</a>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h7 class="footer-title">Contact Us</h7>
+          <p>
+            <i class="fas fa-map-marker-alt me-2"></i> 1st Floor, Block B<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;POTRAZ House,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Harare, Zimbabwe
+          </p>
+          <p><i class="fas fa-phone-alt me-2"></i> +263 242 333 032</p>
+          <p><i class="fas fa-envelope me-2"></i> info@potraz.gov.zw</p>
+        </div>
+      </div>
+      <div class="copyright text-center mt-4">
+        <p>&copy; 2025 Postal and Telecommunications Regulatory Authority of Zimbabwe. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

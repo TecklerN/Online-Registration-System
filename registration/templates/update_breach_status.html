@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card p-4 shadow">
+        <h3 class="mb-3">📝 Update Breach Status</h3>
+
+        <p><strong>Organization:</strong> {{ breach.organization_name }}</p>
+        <p><strong>Description:</strong> {{ breach.description }}</p>
+        <p><strong>Date:</strong> {{ breach.date_occurred }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="status">Change Status:</label>
+            <select name="status" class="form-control mb-3">
+                <option value="pending" {% if breach.status == "pending" %}selected{% endif %}>Pending</option>
+                <option value="reviewed" {% if breach.status == "reviewed" %}selected{% endif %}>Reviewed</option>
+                <option value="resolved" {% if breach.status == "resolved" %}selected{% endif %}>Resolved</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Update Status</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

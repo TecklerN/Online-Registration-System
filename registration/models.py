@@ -52,6 +52,7 @@ class Registration(models.Model):
     email = models.EmailField()
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+    payment_verified = models.BooleanField(default=False)
     payment_status = models.CharField(
         max_length=10, choices=PAYMENT_STATUS_CHOICES, default='Pending'
     )
@@ -95,6 +96,8 @@ class DataBreach(models.Model):
         max_length=20, choices=STATUS_CHOICES, default='pending'
     )
     email_sent = models.BooleanField(default=False)
+    email_sent_at = models.DateTimeField(null=True, blank=True)
+
 
     def save(self, *args, **kwargs):
         # Send email if status has changed

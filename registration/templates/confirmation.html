@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Registration Confirmation{% endblock %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center text-success">Registration Successful!</h2>
-    <p class="text-center">Thank you for registering as a {{ role }}. You will receive an email confirmation shortly.</p>
-    <a href="{% url 'home' %}" class="btn btn-primary mt-3 d-block mx-auto">Go to Home</a>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0 p-5 text-center" style="max-width: 600px; width: 100%;">
+        <h2 class="text-success mb-4">🎉 Registration Successful!</h2>
+        <p class="lead mb-3">Thank you for registering with <strong>POTRAZ</strong>.</p>
+        <p class="text-muted mb-4">
+            Your application has been received and is now under review. We’ll notify you once it’s approved or rejected.
+        </p>
+        <a href="{% url 'homepage' %}" class="btn btn-outline-primary btn-lg">🏠 Back to Home</a>
+    </div>
 </div>
 {% endblock %}

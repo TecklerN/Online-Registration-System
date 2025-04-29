@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center text-primary mb-4">📊 POTRAZ Reports Summary</h2>
 
     <div class="row g-4">
-        <!-- Registration Stats -->
+        <!-- 📝 Registration Overview -->
         <div class="col-md-6">
             <div class="card border-info shadow rounded-4">
                 <div class="card-header bg-info text-white rounded-top-4">
@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">🔹 Total Registrations: <strong>{{ total_registrations }}</strong></li>
+                        <li class="list-group-item">📋 Total Registrations: <strong>{{ total_registrations }}</strong></li>
                         <li class="list-group-item text-success">✅ Approved: <strong>{{ approved }}</strong></li>
                         <li class="list-group-item text-warning">⏳ Pending: <strong>{{ pending }}</strong></li>
                         <li class="list-group-item text-danger">❌ Rejected: <strong>{{ rejected }}</strong></li>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <!-- Breach Report Stats -->
+        <!-- 🚨 Breach Reports Overview -->
         <div class="col-md-6">
             <div class="card border-danger shadow rounded-4">
                 <div class="card-header bg-danger text-white rounded-top-4">
@@ -31,13 +31,29 @@
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">📋 Total Reports: <strong>{{ total_breaches }}</strong></li>
-                        <li class="list-group-item text-success">🟢 Resolved: <strong>{{ resolved }}</strong></li>
-                        <li class="list-group-item text-warning">🟡 Reviewed: <strong>{{ reviewed }}</strong></li>
-                        <li class="list-group-item text-secondary">⚪ Pending: <strong>{{ breach_pending }}</strong></li>
+                        <li class="list-group-item text-success">✅ Resolved: <strong>{{ breach_resolved }}</strong></li>
+                        <li class="list-group-item text-primary">📘 Reviewed: <strong>{{ breach_reviewed }}</strong></li>
+                        <li class="list-group-item text-secondary">⏳ Pending: <strong>{{ breach_pending }}</strong></li>
                     </ul>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ⏱️ Latest Activity -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm p-4 text-center">
+                <h4>⏱️ Latest Activity</h4>
+                <p>🧾 Last Registration: {{ latest_reg.created_at|date:"M d, Y H:i" }}</p>
+                <p>🛡️ Last Breach Report: {{ latest_breach.date_reported|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔙 Back Button -->
+    <div class="text-center mt-4">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">🔙 Back to Admin Dashboard</a>
     </div>
 
     <!-- Footer -->

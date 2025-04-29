@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-info mb-3">🛡️ Breach Report Submitted!</h2>
+        <p class="lead">Thank you for reporting the incident.</p>
+        <p class="text-muted">Our team will review it and get back to you if needed.</p>
+        <a href="{% url 'homepage' %}" class="btn btn-primary mt-3">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

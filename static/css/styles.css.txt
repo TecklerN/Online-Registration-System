@@ -1,0 +1,85 @@
+/* POTRAZ Color Scheme */
+:root {
+  --potraz-dark-blue: #0056b3;       /* Primary dark blue */
+  --potraz-light-blue: #e6f2ff;      /* Water light blue */
+  --potraz-accent: #00a0e1;          /* Vibrant blue accent */
+  --potraz-white: #ffffff;
+  --potraz-dark: #333333;
+}
+
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--potraz-dark);
+  line-height: 1.6;
+}
+
+/* Header Styles */
+.topbar {
+  background-color: var(--potraz-dark-blue);
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: var(--potraz-white);
+}
+
+/* Hero Section with New Vibrant Background */
+.hero-section {
+  background: linear-gradient(135deg, var(--potraz-accent), var(--potraz-dark-blue));
+  color: var(--potraz-white);
+  padding: 100px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../images/network-pattern.png') center/cover;
+  opacity: 0.1;
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+/* Data Controller/Processor Summary Section */
+.data-roles-section {
+  background-color: var(--potraz-light-blue);
+  padding: 60px 0;
+}
+
+.role-card {
+  background: var(--potraz-white);
+  border-radius: 8px;
+  padding: 30px;
+  height: 100%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s;
+}
+
+.role-card:hover {
+  transform: translateY(-5px);
+}
+
+.role-icon {
+  font-size: 2.5rem;
+  color: var(--potraz-dark-blue);
+  margin-bottom: 20px;
+}
+
+/* Rest of your existing styles... */
+/* [Include all other CSS rules from the previous template here] */

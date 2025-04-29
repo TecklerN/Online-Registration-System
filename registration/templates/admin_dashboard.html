@@ -2,38 +2,43 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center text-primary">📊 POTRAZ Admin Dashboard</h2>
+    <h2 class="text-center text-primary mb-4">📊 POTRAZ Admin Dashboard</h2>
 
     <!-- 🔎 Search & Filter Form -->
-    <form method="GET" class="d-flex justify-content-center mt-3">
+    <form method="GET" class="d-flex justify-content-center mb-4">
         <input type="text" name="query" class="form-control w-50" placeholder="🔍 Search by Organization or Email..." value="{{ request.GET.query }}">
         <button type="submit" class="btn btn-primary ms-2">Search</button>
     </form>
-    <div class="row mt-4">
+
+    <div class="row g-4">
         <!-- Pending Registrations -->
         <div class="col-md-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-warning text-white">
-                    <h5>⏳ Pending Registrations</h5>
+            <div class="card shadow border-0 rounded-4 w-100 h-100">
+                <div class="card-header bg-warning text-white rounded-top-4">
+                    <h5 class="mb-0">⏳ Pending Registrations</h5>
                 </div>
                 <div class="card-body">
                     {% if pending_registrations %}
-                    <table class="table table-bordered table-hover">
-                        <tr class="table-secondary">
-                            <th>Organization</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                        {% for reg in pending_registrations %}
-                        <tr>
-                            <td>{{ reg.organization_name }}</td>
-                            <td>{{ reg.email }}</td>
-                            <td>
-                                <a href="{% url 'approve_registration' reg.id %}" class="btn btn-success btn-sm">✔ Approve</a>
-                                <a href="{% url 'reject_registration' reg.id %}" class="btn btn-danger btn-sm">❌ Reject</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                    <table class="table table-sm table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Organization</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in pending_registrations %}
+                            <tr>
+                                <td>{{ reg.organization_name }}</td>
+                                <td>{{ reg.email }}</td>
+                                <td>
+                                    <a href="{% url 'approve_registration' reg.id %}" class="btn btn-success btn-sm">✔</a>
+                                    <a href="{% url 'reject_registration' reg.id %}" class="btn btn-danger btn-sm">✘</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
                     {% else %}
                     <p class="text-muted">No pending registrations.</p>
@@ -44,43 +49,53 @@
 
         <!-- Approved Registrations -->
         <div class="col-md-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-success text-white">
-                    <h5>✅ Approved Registrations</h5>
+            <div class="card shadow border-0 rounded-4 w-100 h-100">
+                <div class="card-header bg-success text-white rounded-top-4">
+                    <h5 class="mb-0">✅ Approved Registrations</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group">
+                    {% if approved_registrations %}
+                    <ul class="list-group list-group-flush">
                         {% for reg in approved_registrations %}
                         <li class="list-group-item">{{ reg.organization_name }} - {{ reg.email }}</li>
-                        {% empty %}
-                        <li class="list-group-item text-muted">No approved registrations.</li>
                         {% endfor %}
                     </ul>
+                    {% else %}
+                    <p class="text-muted">No approved registrations.</p>
+                    <span class="badge bg-success">💰 Paid</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
         <!-- Rejected Registrations -->
         <div class="col-md-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-danger text-white">
-                    <h5>🚫 Rejected Registrations</h5>
+            <div class="card shadow border-0 rounded-4 w-100 h-100">
+                <div class="card-header bg-danger text-white rounded-top-4">
+                    <h5 class="mb-0">🚫 Rejected Registrations</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group">
+                    {% if rejected_registrations %}
+                    <ul class="list-group list-group-flush">
                         {% for reg in rejected_registrations %}
                         <li class="list-group-item">{{ reg.organization_name }} - {{ reg.email }}</li>
-                        {% empty %}
-                        <li class="list-group-item text-muted">No rejected registrations.</li>
                         {% endfor %}
                     </ul>
+                    {% else %}
+                    <p class="text-muted">No rejected registrations.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Summary Button -->
+    <div class="text-center mt-5">
+        <a href="{% url 'reports_summary' %}" class="btn btn-outline-primary btn-lg shadow">📊 View Reports Summary</a>
+    </div>
+
     <!-- Footer -->
-    <footer class="mt-5 text-center text-muted">
+    <footer class="mt-4 text-center text-muted">
         <small>&copy; 2025 POTRAZ Online Registration System</small>
     </footer>
 </div>

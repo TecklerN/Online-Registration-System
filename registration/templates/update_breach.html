@@ -17,6 +17,17 @@
                 <option value="reviewed" {% if breach.status == "reviewed" %}selected{% endif %}>Reviewed</option>
                 <option value="resolved" {% if breach.status == "resolved" %}selected{% endif %}>Resolved</option>
             </select>
+            <label for="cause">Cause of Breach:</label>
+    <textarea name="cause" class="form-control mb-3" rows="3">{{ breach.cause }}</textarea>
+
+    <label for="resolution_notes">How it was Resolved:</label>
+    <textarea name="resolution_notes" class="form-control mb-3" rows="3">{{ breach.resolution_notes }}</textarea>
+
+    <label for="recommendations">How to Avoid it in Future:</label>
+    <textarea name="recommendations" class="form-control mb-3" rows="3">{{ breach.recommendations }}</textarea>
+
+    <button type="submit" class="btn btn-primary">Update Status</button>
+</form>
             <button type="submit" class="btn btn-primary">Update Status</button>
         </form>
     </div>

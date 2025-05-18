@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reject Registration – POTRAZ</title>
+</head>
+<body>
+    <h2> Reject Registration for {{ registration.organization_name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Enter Rejection Reason:</label><br>
+        <textarea name="rejection_reason" rows="5" cols="50" required></textarea><br><br>
+        <button type="submit">Send Rejection Email</button>
+    </form>
+</body>
+</html>

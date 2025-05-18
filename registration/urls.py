@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 from .views import homepage
-from .views import update_breach_status
+from .views import update_breach
 from .views import reports_summary
 from .views import report_breach
 from .views import initiate_payment
@@ -13,9 +13,8 @@ from .views import admin_dashboard, approve_registration, reject_registration
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
-    path('admin/breach/update/<int:breach_id>/', update_breach_status, name='update_breach_status'),
+    path('admin/breach/update/<int:breach_id>/', views.update_breach, name='update_breach'),
     path('confirmation/', views.confirmation, name='confirmation'),
-    path('reports-summary/', reports_summary, name='reports_summary'),
     path('reports-summary/', views.reports_summary, name='reports_summary'),
     path('my-breaches/', views.my_breaches, name='my_breaches'),
     path('admin/breach-reports/', views.breach_reports_admin, name='breach_reports_admin'),
@@ -32,4 +31,11 @@ urlpatterns = [
     path('payment-update/', views.payment_update, name='payment_update'),
     path('payment-success/', views.payment_success, name='payment_success'),
     path('accounts/', include('django.contrib.auth.urls')),  # Built-in authentication views
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='registration/password_reset_confirm.html'
+    ), name='password_reset_confirm'),
+
+    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='registration/password_reset_complete.html'
+    ), name='password_reset_complete'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

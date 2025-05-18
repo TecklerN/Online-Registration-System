@@ -1,19 +1,57 @@
 from django.contrib import admin
-from .models import Registration, DataBreach
 from django.utils.html import format_html
-from django.core.mail import send_mail
-
-
-from django.core.mail import EmailMultiAlternatives
-from django.utils.html import format_html
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.utils import timezone
 from django.conf import settings
+from .models import Registration, DataBreach
+
+# Define action functions first
+@admin.action(description="Mark selected breaches as Reviewed and send email")
+def mark_as_reviewed(modeladmin, request, queryset):
+    for breach in queryset:
+        breach.status = 'reviewed'
+        breach.email_sent = True
+        breach.email_sent_at = timezone.now()
+        send_mail(
+            "Breach Reviewed by POTRAZ",
+            f"Dear {breach.user.username},\n\n"
+            f"Your reported data breach has been reviewed.\n\n"
+            f"Review Details:\nCause: {breach.cause or 'N/A'}\n"
+            f"Resolution: {breach.resolution_notes or 'N/A'}\n"
+            f"Recommendations: {breach.recommendations or 'N/A'}\n\n"
+            f"Thank you for cooperating with POTRAZ.",
+            settings.DEFAULT_FROM_EMAIL,
+            [breach.user.email],
+            fail_silently=False
+        )
+        breach.save()
+
+@admin.action(description="Mark selected breaches as Resolved")
+def mark_as_resolved(modeladmin, request, queryset):
+    for breach in queryset:
+        if breach.status != 'resolved':
+            breach.status = 'resolved'
+            breach.email_sent = True
+            breach.email_sent_at = timezone.now()
+            send_mail(
+                "✅ Breach Resolved by POTRAZ",
+                f"Dear {breach.user.username},\n\n"
+                f"Your reported breach has been resolved successfully.\n\n"
+                f"Cause: {breach.cause or 'N/A'}\n"
+                f"Resolution: {breach.resolution_notes or 'N/A'}\n"
+                f"Recommendations to Prevent Recurrence:\n{breach.recommendations or 'N/A'}\n\n"
+                f"Regards,\nPOTRAZ Team",
+                settings.DEFAULT_FROM_EMAIL,
+                [breach.user.email],
+                fail_silently=False
+            )
+            breach.save()
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('organization_name', 'email', 'role', 'created_at', 'payment_status', 'approval_status')
     list_filter = ('role', 'payment_status', 'approval_status')
     search_fields = ('organization_name', 'email')
-
     actions = ['approve_selected', 'reject_selected']
 
     def approve_selected(self, request, queryset):
@@ -32,7 +70,7 @@ class RegistrationAdmin(admin.ModelAdmin):
                 <html>
                     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
                         <div style="text-align:center; margin-bottom:20px;">
-                            <img src="http://127.0.0.1:8000/static/images/potraz_logo.png.png" alt="POTRAZ Logo" width="150" />
+                            <img src="http://127.0.0.1:8000/static/images/potraz_logo.png.png" width="150" />
                         </div>
                         <h2 style="color: #004aad;">🎉 Congratulations!</h2>
                         <p>Dear <strong>{}</strong>,</p>
@@ -86,26 +124,19 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     reject_selected.short_description = "Reject selected applications and send beautiful email"
 
-
-
 @admin.register(DataBreach)
 class DataBreachAdmin(admin.ModelAdmin):
     list_display = (
-        'organization_name',
-        'description_preview',
-        'formatted_date',
-        'colored_status',
-        'email_sent_icon'
+        'organization_name', 'description_preview', 'formatted_date',
+        'colored_status', 'email_sent_icon'
     )
-
     list_filter = ('status', 'date_occurred')
     search_fields = ('organization_name', 'description')
-
     readonly_fields = (
-        'user', 'organization_name', 'description',
-        'date_occurred', 'created_at', 'date_reported',
-        'email_sent'
+        'user', 'organization_name', 'description', 'date_occurred',
+        'created_at', 'date_reported', 'email_sent'
     )
+    actions = [mark_as_reviewed, mark_as_resolved]
 
     def description_preview(self, obj):
         return obj.description[:60] + '...' if obj.description else ''
@@ -121,11 +152,33 @@ class DataBreachAdmin(admin.ModelAdmin):
     colored_status.short_description = 'Status'
 
     def email_sent_icon(self, obj):
-        if obj.email_sent:
-            return format_html('<span style="color:green;">✔️</span>')
-        return format_html('<span style="color:red;">❌</span>')
+        return format_html('<span style="color:green;">✔️</span>') if obj.email_sent else format_html('<span style="color:red;">❌</span>')
     email_sent_icon.short_description = 'Email Sent'
 
     def formatted_date(self, obj):
         return obj.date_reported.strftime('%b %d, %Y – %I:%M %p')
     formatted_date.short_description = 'Date Reported'
+
+    def save_model(self, request, obj, form, change):
+        if change and 'status' in form.changed_data:
+            subject = f"🛡️ POTRAZ - Breach Status Updated"
+            message = f"""
+Dear {obj.organization_name},
+
+Your data breach report dated {obj.date_occurred} has been updated.
+
+New Status: {obj.status.upper()}
+
+If you have further questions, feel free to reach out.
+
+Best regards,  
+POTRAZ Team
+"""
+            send_mail(
+                subject,
+                message,
+                'nyashateckler@gmail.com',
+                [obj.user.email],
+                fail_silently=True
+            )
+        super().save_model(request, obj, form, change)

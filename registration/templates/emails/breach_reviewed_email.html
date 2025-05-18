@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Breach Reviewed</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; background: #f9f9f9; padding: 20px; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { max-width: 120px; }
+        .footer { font-size: 12px; color: #777; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="{% static 'images/potraz-logo.png' %}" alt="POTRAZ Logo" class="logo">
+        <h2>Data Breach Reviewed</h2>
+        <p>Dear {{ organization_name }},</p>
+        <p>We have successfully reviewed your reported breach submitted on {{ date_reported }}.</p>
+        <p>Thank you for your prompt communication. Our team will contact you with the next steps.</p>
+        <p>Regards,<br>POTRAZ Cybersecurity Team</p>
+        <div class="footer">This is an automated email. Please do not reply.</div>
+    </div>
+</body>
+</html>

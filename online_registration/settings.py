@@ -154,8 +154,8 @@ EMAIL_HOST_PASSWORD = 'your-password'
 # Paynow Credentials
 PAYNOW_INTEGRATION_ID = "20272"
 PAYNOW_INTEGRATION_KEY = "8c7d4fe8-7aed-4f43-aa25-2cd3c28a76c5"
-PAYNOW_RESULT_URL = "http://127.0.0.1:8000/payment-update/"  # Where Paynow sends payment results
-PAYNOW_RETURN_URL = "http://127.0.0.1:8000/payment-success/"  # Where users go after payment
+PAYNOW_RESULT_URL = "http://127.0.0.1:8000/payment-update/"  
+PAYNOW_RETURN_URL = "http://127.0.0.1:8000/payment-success/"  
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

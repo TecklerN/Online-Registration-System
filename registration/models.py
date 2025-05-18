@@ -62,6 +62,9 @@ class Registration(models.Model):
         null=True, 
         blank=True
     )
+    # models.py
+    rejection_reason = models.TextField(null=True, blank=True)
+
     approval_status = models.CharField(
         max_length=10, choices=APPROVAL_CHOICES, default='Pending'
     )
@@ -92,6 +95,10 @@ class DataBreach(models.Model):
     actions_taken = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     date_reported = models.DateTimeField(auto_now_add=True)
+    resolution_notes = models.TextField(blank=True, null=True)
+    cause = models.TextField(blank=True, null=True)
+    recommendations = models.TextField(blank=True, null=True)
+
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default='pending'
     )

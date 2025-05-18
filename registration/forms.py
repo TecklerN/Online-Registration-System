@@ -23,7 +23,7 @@ class BreachReportForm(forms.ModelForm):
             'supporting_documents',
         ]
         widgets = {
-            'incident_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'date_occurred': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'impact': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'actions_taken': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
@@ -40,3 +40,16 @@ class DataBreachForm(forms.ModelForm):
             'organization_name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
+
+class BreachStatusForm(forms.ModelForm):
+    class Meta:
+        model = DataBreach
+        fields = ['status', 'cause', 'resolution_notes', 'recommendations']
+        widgets = {
+            'cause': forms.Textarea(attrs={'rows': 2}),
+            'resolution_notes': forms.Textarea(attrs={'rows': 2}),
+            'recommendations': forms.Textarea(attrs={'rows': 2}),
+        }
+
+

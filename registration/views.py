@@ -14,7 +14,12 @@ from paynow import Paynow
 from django.contrib.auth.models import User
 import random
 import string
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from datetime import datetime
 from django.conf import settings
+from django.utils.timezone import now 
 from .models import DataBreach
 from .forms import BreachReportForm
 from .forms import DataBreachForm
@@ -199,28 +204,30 @@ def make_payment(request, registration_id):
 
 # Ensure only POTRAZ staff can access the panel
 def is_potraz_staff(user):
-    return user.is_authenticated and user.is_staff  # Adjust if you have specific roles
+    return user.is_authenticated and user.is_staff  
 
 @login_required
-
 def admin_dashboard(request):
     query = request.GET.get('query', '')
 
-    # Filter registrations based on search query
     pending_registrations = Registration.objects.filter(approval_status="Pending", payment_verified=True)
-    approved_registrations = Registration.objects.filter(approval_status="Approved", payment_verified=True)
-    rejected_registrations = Registration.objects.filter(approval_status="Rejected", payment_verified=True)
+    approved_registrations = Registration.objects.filter(approval_status="Approved")
+    rejected_registrations = Registration.objects.filter(approval_status="Rejected")
 
     if query:
-        pending_registrations = pending_registrations.filter(organization_name__icontains=query) | pending_registrations.filter(email__icontains=query)
-        approved_registrations = approved_registrations.filter(organization_name__icontains=query) | approved_registrations.filter(email__icontains=query)
-        rejected_registrations = rejected_registrations.filter(organization_name__icontains=query) | rejected_registrations.filter(email__icontains=query)
+        pending_registrations = pending_registrations.filter(
+            organization_name__icontains=query) | pending_registrations.filter(email__icontains=query)
+        approved_registrations = approved_registrations.filter(
+            organization_name__icontains=query) | approved_registrations.filter(email__icontains=query)
+        rejected_registrations = rejected_registrations.filter(
+            organization_name__icontains=query) | rejected_registrations.filter(email__icontains=query)
 
     return render(request, 'admin_dashboard.html', {
         'pending_registrations': pending_registrations,
         'approved_registrations': approved_registrations,
         'rejected_registrations': rejected_registrations,
     })
+
 
 
 @login_required
@@ -230,28 +237,75 @@ def approve_registration(request, reg_id):
     registration.approval_status = 'Approved'
     registration.save()
 
-    # 📧 Send Approval Email
-    subject = "🎉 Registration Approved!"
-    message = f"Dear {registration.organization_name},\n\nYour registration has been approved by POTRAZ. You can now access all services.\n\nBest Regards,\nPOTRAZ Team"
-    send_mail(subject, message, 'nyashateckler@gmail.com', [registration.email])
+    # ✅ Make sure a user exists
+    user = User.objects.filter(email=registration.email).first()
 
-    messages.success(request, "✅ Registration approved & email sent!")
+    if user:
+        # 🔐 Generate secure password reset email
+        subject = "🎉 Registration Approved - Set Your Password"
+        message = f"Dear {registration.organization_name},\n\nYour registration has been approved by POTRAZ. You can now access all services.\n\nBest Regards,\nPOTRAZ Team"
+        email_template_name = "registration/password_reset_email.html"
+        context = {
+            "email": user.email,
+            "domain": "127.0.0.1:8000",
+            "site_name": "POTRAZ",
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+            "user": user,
+            "token": default_token_generator.make_token(user),
+            "protocol": "http",
+        }
+        email_body = render_to_string(email_template_name, context)
+
+        send_mail(subject, email_body, 'nyashateckler@gmail.com', [user.email], fail_silently=False)
+
+    messages.success(request, " Registration approved & email sent!")
     return redirect('admin_dashboard')
 
 @login_required
 def reject_registration(request, reg_id):
     registration = get_object_or_404(Registration, id=reg_id)
-    registration.approval_status = 'Rejected'
-    registration.save()  
+    
+    if request.method == 'POST':
+        reason = request.POST.get('rejection_reason')
+        registration.approval_status = 'Rejected'
+        registration.rejection_reason = reason
+        registration.save()
 
-    # 📧 Send Rejection Email
-    subject = "❌ Registration Rejected"
-    message = f"Dear {registration.organization_name},\n\nUnfortunately, your registration was rejected by POTRAZ.\nIf you believe this was a mistake, please contact support.\n\nBest Regards,\nPOTRAZ Team"
-    send_mail(subject, message, 'your-email@gmail.com', [registration.email])
+        # 📧 Send Rejection Email
+        subject = " Registration Rejected  POTRAZ"
+        message = f"""
+Dear {registration.organization_name},
 
-    messages.error(request, "❌ Registration rejected & email sent!")
-    return redirect('admin_dashboard')
+Thank you for submitting your registration to the POTRAZ Online Registration System.
 
+After careful review, we regret to inform you that your registration has been **rejected** due to the following reason:
+
+❗ {reason or 'Missing or invalid documentation.'}
+
+We kindly advise you to review your submission and ensure all required documents are authentic, complete, and properly formatted before reapplying.
+
+If you believe this decision was made in error or you need further clarification, please contact our team at: support@potraz.gov.zw.
+
+We appreciate your interest in complying with the national data governance standards.
+
+Best regards,  
+POTRAZ Registration Team  
+www.potraz.gov.zw
+"""
+        send_mail(
+            subject,
+            message,
+            'nyashateckler@gmail.com',
+            [registration.email],
+            fail_silently=False,
+        )
+
+        messages.error(request, " Registration rejected & email sent!")
+        return redirect('admin_dashboard')
+
+    return render(request, 'admin/reject_reason_form.html', {'registration': registration})
+
+   
 @login_required
 def report_breach(request):
     if request.method == 'POST':
@@ -296,32 +350,6 @@ def breach_reports_admin(request):
     return render(request, 'admin_breach_reports.html', {'reports': reports})
 
 
-@login_required
-def report_breach(request):
-    if request.method == 'POST':
-        form = DataBreachForm(request.POST)
-        if form.is_valid():
-            breach = form.save(commit=False)
-            breach.user = request.user  # Assign user
-            breach.save()
-            # 💌 Send confirmation email to the user
-            subject = "✅ Data Breach Report Received"
-            message = (
-                f"Dear {breach.organization_name},\n\n"
-                f"We have received your data breach report dated {breach.date_occurred}.\n\n"
-                f"Details: {breach.description}\n\n"
-                f"Our team will review and get back to you if needed.\n\nBest regards,\nPOTRAZ Team"
-            )
-            send_mail(subject, message, 'your-email@gmail.com', [request.user.email])
-            messages.success(request, "✅ Breach report submitted successfully!")
-            return render(request, "breach_confirmation.html")
-
-        else:
-            messages.error(request, "Please correct the form errors.")
-    else:
-        form = DataBreachForm()
-
-    return render(request, 'report_breach.html', {'form': form})
 
 
 @login_required
@@ -367,18 +395,80 @@ def reports_summary(request):
         "latest_reg": latest_reg,
     })
 
-
-
-@staff_member_required
-def update_breach_status(request, breach_id):
+@login_required
+def update_breach(request, breach_id):
     breach = get_object_or_404(DataBreach, id=breach_id)
 
     if request.method == 'POST':
+        old_status = breach.status
         new_status = request.POST.get('status')
+        resolution_notes = request.POST.get('resolution_notes')  
+        cause = request.POST.get('cause')  
+        recommendations = request.POST.get('recommendations')  
+
         breach.status = new_status
+        breach.resolution_notes = resolution_notes
+        breach.cause = cause
+        breach.recommendations = recommendations
         breach.save()
 
-        messages.success(request, f"Status updated to {new_status}.")
+        if old_status != 'resolved' and new_status == 'resolved':
+            subject = "✅ Data Breach Resolved - POTRAZ"
+            message = (
+                f"Dear {breach.organization_name},\n\n"
+                f"Thank you for reporting the data breach that occurred on {breach.date_occurred}.\n\n"
+                f"We have reviewed and resolved the issue. Please find the summary below:\n\n"
+                f"📌 **Cause**: {cause}\n"
+                f"🔧 **How it was resolved**: {resolution_notes}\n"
+                f"✅ **Recommendations**: {recommendations}\n\n"
+                f"Status: {breach.status}\n\n"
+                f"If you need more help, feel free to reach out.\n\nBest regards,\nPOTRAZ Cybersecurity Unit"
+            )
+            send_mail(subject, message, 'your-email@gmail.com', [breach.user.email])
+            messages.success(request, "Resolved email sent successfully.")
+
+        else:
+            messages.success(request, "Breach status updated successfully.")
+
         return redirect('breach_reports_admin')
 
-    return render(request, 'update_breach_status.html', {'breach': breach})
+    return render(request, 'update_breach.html', {'breach': breach})
+
+
+def update_breach_status(request, breach_id):
+    breach = get_object_or_404(BreachReport, pk=breach_id)
+    
+    if request.method == 'POST':
+        form = BreachStatusForm(request.POST, instance=breach)
+        if form.is_valid():
+            updated_breach = form.save()
+
+            # Only send email if status is resolved
+            if updated_breach.status == 'resolved':
+                subject = "✅ Your Data Breach Report Has Been Resolved"
+                from_email = "noreply@potraz.gov.zw"
+                to_email = [updated_breach.email]  # assuming breach has an email field
+
+                context = {
+                    'organization_name': updated_breach.organization_name,
+                    'description': updated_breach.description,
+                    'date_occurred': updated_breach.date_occurred,
+                    'cause': updated_breach.cause,
+                    'resolution_notes': updated_breach.resolution_notes,
+                    'recommendations': updated_breach.recommendations,
+                    'current_year': datetime.now().year,
+                }
+
+                html_content = render_to_string('emails/breach_resolved_email.html', context)
+                text_content = strip_tags(html_content)
+
+                email = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+                email.attach_alternative(html_content, "text/html")
+                email.send()
+
+            messages.success(request, "Breach status updated successfully.")
+            return redirect('view_breaches')
+    else:
+        form = BreachStatusForm(instance=breach)
+
+    return render(request, 'update_breach_status.html', {'form': form, 'breach': breach})

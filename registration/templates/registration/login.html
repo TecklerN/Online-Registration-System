@@ -27,6 +27,12 @@
                 <label for="password" class="form-label fw-semibold">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
+
+             <!-- 🔐 Forgot Password Link -->
+    <p class="text-center mt-2">
+        <a href="{% url 'password_reset' %}" class="text-decoration-none text-secondary">Forgot Password?</a>
+    </p>
+
             <button type="submit" class="btn btn-primary w-100">🔐 Login</button>
         </form>
 

@@ -72,15 +72,26 @@ class RegistrationAdmin(admin.ModelAdmin):
                         <div style="text-align:center; margin-bottom:20px;">
                             <img src="http://127.0.0.1:8000/static/images/potraz_logo.png.png" width="150" />
                         </div>
-                        <h2 style="color: #004aad;">🎉 Congratulations!</h2>
-                        <p>Dear <strong>{}</strong>,</p>
+                        <h2 style="color: green;"> Congratulations!</h2>
+                        <p>Dear <strong>{org}</strong>,</p>
                         <p>Your registration with <strong>POTRAZ</strong> has been <span style="color:green;"><strong>approved</strong></span>.</p>
+                        <p>Here are your login details:</p>
+                    <ul>
+                        <li><strong>Username/Email:</strong> {email}</li>
+                        <li><strong>Password:</strong> (Your chosen password)</li>
+                    </ul>
+                    <p>You can log in here: <a href="{login_url}">{login_url}</a></p>
+                    <p>If you've forgotten your password, you can reset it from the login page.</p>
+                    <br/>
                         <p>You may now access the system and services.</p>
                         <br/>
                         <p style="font-size: 12px; color: grey;">Best regards,<br/>POTRAZ Team</p>
                     </body>
                 </html>
-                """, registration.organization_name
+                """,
+            org=registration.organization_name,
+            email=registration.email,
+            login_url='http://127.0.0.1:8000/accounts/login/'
             )
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
@@ -94,7 +105,7 @@ class RegistrationAdmin(admin.ModelAdmin):
             registration.approval_status = 'Rejected'
             registration.save()
 
-            subject = "🚫 Registration Rejected - POTRAZ"
+            subject = " Registration Rejected - POTRAZ"
             from_email = 'nyashateckler@gmail.com'
             to_email = [registration.email]
 
@@ -108,7 +119,7 @@ class RegistrationAdmin(admin.ModelAdmin):
                             <img src="http://127.0.0.1:8000/static/images/potraz_logo.png.png" width="150" />
                         </div>
                         <h2 style="color: red;">🚫 We're Sorry</h2>
-                        <p>Dear <strong>{}</strong>,</p>
+                        <p>Dear <strong>{0}</strong>,</p>
                         <p>Unfortunately, your registration with <strong>POTRAZ</strong> has been <span style="color:red;"><strong>rejected</strong></span>.</p>
                         <p>If you believe this was a mistake, please contact our team for assistance.</p>
                         <br/>

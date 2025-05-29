@@ -14,6 +14,9 @@ from paynow import Paynow
 from django.contrib.auth.models import User
 import random
 import string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -243,7 +246,23 @@ def approve_registration(request, reg_id):
     if user:
         # 🔐 Generate secure password reset email
         subject = "🎉 Registration Approved - Set Your Password"
-        message = f"Dear {registration.organization_name},\n\nYour registration has been approved by POTRAZ. You can now access all services.\n\nBest Regards,\nPOTRAZ Team"
+        message = f"""
+        Dear {registration.organization_name},
+
+🎉 Congratulations! Your registration with POTRAZ has been approved.
+
+You may now access the online system and its full set of services. To begin, please set your password using the link below:
+
+🔐 Set Your Password: http://127.0.0.1:8000/reset/{urlsafe_base64_encode(force_bytes(user.pk))}/{default_token_generator.make_token(user)}/
+
+Please do this within the next 24 hours to secure your account.
+
+If you encounter any issues, feel free to contact us at support@potraz.gov.zw.
+
+Best regards,  
+POTRAZ Registration Team  
+🌐 www.potraz.gov.zw
+"""
         email_template_name = "registration/password_reset_email.html"
         context = {
             "email": user.email,
@@ -324,11 +343,11 @@ def report_breach(request):
             )
 
             try:
-                send_mail(subject, message, 'your-email@gmail.com', [request.user.email])
+                send_mail(subject, message, 'nyashateckler@gmail.com', [request.user.email])
                 breach.email_sent = True
                 breach.email_sent_at = now()
             except Exception as e:
-                print("❌ Failed to send email:", e)
+                print(" Failed to send email:", e)
                 breach.email_sent = False
 
             breach.save()
@@ -336,7 +355,7 @@ def report_breach(request):
             messages.success(request, "✅ Breach report submitted successfully!")
             return render(request, 'breach_confirmation.html')
         else:
-            print("❌ Breach form errors:", form.errors)
+            print(" Breach form errors:", form.errors)
             messages.error(request, "Please correct the errors.")
     else:
         form = DataBreachForm()

@@ -105,25 +105,34 @@ def payment_success(request):
 
 def register(request):
     print("📥 Register view accessed with method:", request.method)
-    registration = None
-
+    
     if request.method == 'POST':
         form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            registration = form.save()
-            print("✅ Registration saved:", registration)
+            try:
+                # 1. Create the User first
+                username = form.cleaned_data['email']
+                password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                user = User.objects.create_user(
+                    username=username,
+                    password=password,
+                    email=form.cleaned_data['email']
+                )
+                
+                # 2. Save Registration with User linked
+                registration = form.save(commit=False)
+                registration.user = user  # Link the user to registration
+                
+                # 3. Explicitly handle file save
+                if 'document' in request.FILES:
+                    registration.document = request.FILES['document']
+                
+                registration.save()
+                print(f"✅ Registration saved! Document: {'Uploaded' if registration.document else 'Missing'}")
 
-            # ✅ Auto-create user account
-            username = registration.email
-            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-
-            user = User.objects.create_user(username=username, password=password)
-            user.email = registration.email
-            user.save()
-
-            # ✅ Send email with both registration confirmation & login credentials
-            subject = "✅ Registration Received & Login Details - POTRAZ"
-            message = f"""
+                # 4. Send email (your existing beautiful email code)
+                subject = "✅ Registration Received & Login Details - POTRAZ"
+                message = f"""
 Dear {registration.organization_name},
 
 Thank you for registering with POTRAZ.
@@ -141,29 +150,37 @@ Login here: http://127.0.0.1:8000/login
 Best regards,  
 POTRAZ Team
 """
-            send_mail(
-                subject,
-                message,
-                'nyashateckler@gmail.com',  # Or use a noreply@potraz.gov.zw if you have one
-                [registration.email],
-                fail_silently=False,
-            )
+                send_mail(
+                    subject,
+                    message,
+                    'nyashateckler@gmail.com',
+                    [registration.email],
+                    fail_silently=False,
+                )
 
-            messages.success(request, '🎉 Registration successful! Login credentials have been emailed.')
-            return render(request, 'confirmation.html')
+                messages.success(request, '🎉 Registration successful! Login credentials have been emailed.')
+                return redirect('confirmation')  # Changed to redirect for better pattern
 
+            except Exception as e:
+                print(f"❌ Registration failed: {str(e)}")
+                # Clean up if anything failed
+                if 'user' in locals():
+                    user.delete()
+                messages.error(request, 'Registration failed. Please try again.')
         else:
             print("❌ Form errors:", form.errors)
+            # Special handling for document errors
+            if 'document' in form.errors:
+                print("Document errors:", form.errors['document'])
             messages.error(request, 'Please correct the errors below.')
     else:
         form = RegistrationForm()
 
-    return render(request, 'register.html', {'form': form, 'registration': registration})
-
-
+    return render(request, 'register.html', {'form': form})
 
 def confirmation(request):
     return render(request, 'confirmation.html')
+
 
 
 @csrf_exempt

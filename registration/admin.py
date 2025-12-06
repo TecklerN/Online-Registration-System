@@ -4,6 +4,8 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.utils import timezone
 from django.conf import settings
 from .models import Registration, DataBreach
+import random, string
+
 
 # Define action functions first
 @admin.action(description="Mark selected breaches as Reviewed and send email")
@@ -53,54 +55,91 @@ class RegistrationAdmin(admin.ModelAdmin):
     list_filter = ('role', 'payment_status', 'approval_status')
     search_fields = ('organization_name', 'email')
     actions = ['approve_selected', 'reject_selected']
+    
 
-    def approve_selected(self, request, queryset):
-        for registration in queryset:
-            registration.approval_status = 'Approved'
-            registration.save()
 
-            subject = "🎉 Registration Approved - POTRAZ"
-            from_email = 'nyashateckler@gmail.com'
-            to_email = [registration.email]
+def approve_selected(self, request, queryset):
+    from django.contrib.auth.models import User
 
-            text_content = f"Dear {registration.organization_name}, your registration has been approved."
+    for registration in queryset:
+        registration.approval_status = 'Approved'
+        registration.payment_verified = True
 
-            html_content = format_html(
-                """
-                <html>
-                    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                        <div style="text-align:center; margin-bottom:20px;">
-                            <img src="http://127.0.0.1:8000/static/images/potraz_logo.png.png" width="150" />
-                        </div>
-                        <h2 style="color: green;"> Congratulations!</h2>
-                        <p>Dear <strong>{org}</strong>,</p>
-                        <p>Your registration with <strong>POTRAZ</strong> has been <span style="color:green;"><strong>approved</strong></span>.</p>
-                        <p>Here are your login details:</p>
-                    <ul>
-                        <li><strong>Username/Email:</strong> {email}</li>
-                        <li><strong>Password:</strong> (Your chosen password)</li>
-                    </ul>
-                    <p>You can log in here: <a href="{login_url}">{login_url}</a></p>
-                    <p>If you've forgotten your password, you can reset it from the login page.</p>
-                    <br/>
-                        <p>You may now access the system and services.</p>
-                        <br/>
-                        <p style="font-size: 12px; color: grey;">Best regards,<br/>POTRAZ Team</p>
-                    </body>
-                </html>
-                """,
-            org=registration.organization_name,
-            email=registration.email,
-            login_url='http://127.0.0.1:8000/accounts/login/'
+        password = None  # Initialize password variable
+         # ✅ Check if the registration has an associated user
+        if not hasattr(registration, 'user') or not registration.user:
+            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            user = User.objects.create_user(
+                username=registration.email,
+                password=password,
+                email=registration.email
             )
+            registration.user = user
+        
+            registration.save()
+        else:
+                password = "Use the password you received earlier."
 
-            msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
+        
+        # Prepare login details based on whether we created a new user
+        if password:
+            login_details = f"""
+            <p>Here are your login credentials:</p>
+            <ul>
+                <li><strong>Username:</strong> {registration.email}</li>
+                <li><strong>Password:</strong> {password}</li>
+            </ul>
+            """
+        else:
+            login_details = """
+            <p>Use your existing credentials to login.</p>
+            """
+        
+        subject = "🎉 Registration Approved - POTRAZ"
+        from_email = 'nyashateckler@gmail.com'
+        to_email = [registration.email]
 
-    approve_selected.short_description = "Approve selected applications and send beautiful email"
+        text_content = f"Dear {registration.organization_name}, your registration has been approved."
 
-    def reject_selected(self, request, queryset):
+        html_content = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <img src="http://127.0.0.1:8000/static/images/potraz_logo.png" width="150" />
+                    </div>
+                    <h2 style="color: green;">🎉 Congratulations!</h2>
+                    <p>Dear <strong>{registration.organization_name}</strong>,</p>
+                    <p>Your registration with <strong>POTRAZ</strong> has been 
+                    <span style="color:green;"><strong>approved</strong></span>.</p>
+                    <p>{'Here are your login credentials:' if password else ''}</p>
+                    <ul>
+                        <li><strong>Username:</strong> {registration.email}</li>
+                        <li><strong>Password:</strong> {password}</li>
+                    </ul>
+                    <p>You can log in here: 
+                    <a href="http://127.0.0.1:8000/login">http://127.0.0.1:8000/login</a></p>
+                    <br/>
+                    <p>We look forward to your compliance and cooperation.</p>
+                    <br/>
+                    <p style="font-size: 12px; color: grey;">Best regards,<br/>POTRAZ Team</p>
+                </body>
+            </html>
+        """
+        msg = EmailMultiAlternatives(
+                subject="🎉 Registration Approved - POTRAZ",
+                body=f"Dear {registration.organization_name}, your registration has been approved.",
+                from_email='nyashateckler@gmail.com',
+                to=[registration.email],
+                bcc=['nyashateckler@gmail.com']
+            )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        
+        self.message_user(request, f"{queryset.count()} registrations approved")
+    approve_selected.short_description = "Approve selected organizations"
+
+
+def reject_selected(self, request, queryset):
         for registration in queryset:
             registration.approval_status = 'Rejected'
             registration.save()
@@ -114,26 +153,28 @@ class RegistrationAdmin(admin.ModelAdmin):
             html_content = format_html(
                 """
                 <html>
-                    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-                        <div style="text-align:center; margin-bottom:20px;">
-                            <img src="http://127.0.0.1:8000/static/images/potraz_logo.png.png" width="150" />
-                        </div>
-                        <h2 style="color: red;">🚫 We're Sorry</h2>
-                        <p>Dear <strong>{0}</strong>,</p>
-                        <p>Unfortunately, your registration with <strong>POTRAZ</strong> has been <span style="color:red;"><strong>rejected</strong></span>.</p>
-                        <p>If you believe this was a mistake, please contact our team for assistance.</p>
-                        <br/>
-                        <p style="font-size: 12px; color: grey;">Best regards,<br/>POTRAZ Team</p>
-                    </body>
-                </html>
+                <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <img src="http://127.0.0.1:8000/static/images/potraz_logo.png" width="150" />
+                    </div>
+                    <h2 style="color: red;"> We're Sorry</h2>
+                    <p>Dear <strong>{registration.organization_name}</strong>,</p>
+                    <p>Unfortunately, your registration with <strong>POTRAZ</strong> has been 
+                    <span style="color:red;"><strong>rejected</strong></span>.</p>
+                    <p>Possible reasons include missing or invalid documents. Please verify and try again.</p>
+                    <p>If you believe this was a mistake, contact our support team.</p>
+                    <br/>
+                    <p style="font-size: 12px; color: grey;">Best regards,<br/>POTRAZ Team</p>
+                </body>
+            </html>
                 """, registration.organization_name
             )
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
             msg.attach_alternative(html_content, "text/html")
             msg.send()
-
-    reject_selected.short_description = "Reject selected applications and send beautiful email"
+        self.message_user(request, " Selected registrations rejected and email sent.")
+reject_selected.short_description = "Reject selected applications and send email"
 
 @admin.register(DataBreach)
 class DataBreachAdmin(admin.ModelAdmin):

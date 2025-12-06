@@ -48,6 +48,15 @@ class Registration(models.Model):
         ('Rejected', 'Rejected'),
     ]
 
+    # ➕ ADD THIS FIELD (right after your choices)
+    user = models.OneToOneField(
+        'auth.User',  # Points to Django's built-in User model
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='registration'
+    )
+
     organization_name = models.CharField(max_length=255)
     email = models.EmailField()
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
@@ -111,7 +120,7 @@ class DataBreach(models.Model):
         if self.pk:
             old = DataBreach.objects.get(pk=self.pk)
             if old.status != self.status:
-                subject = "📢 Update on Your Breach Report"
+                subject = "    Update on Your Breach Report"
                 message = (
                     f"Dear {self.user.username},\n\n"
                     f"The status of your breach report (dated {self.date_reported.date()}) "
